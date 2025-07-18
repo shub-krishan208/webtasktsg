@@ -1,0 +1,95 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* 1. Main container for alignment */
+.title-heading {
+  display: flex; /* Use Flexbox for easy alignment */
+  align-items: center; /* Vertically align the image and text */
+  justify-content: center;
+  gap: 0.75em; /* Add some space between the logo and text */
+  font-size: 2rem; /* Example font size */
+}
+
+/* 2. Style the logo image to scale with text */
+.logo-image {
+  height: 2em; /* This is the key: 'em' scales the image with the parent's font size */
+  width: auto; /* Maintain the aspect ratio */
+}
+
+/* 3. Prepare the link for the shine effect */
+.logo-link {
+  position: relative; /* Needed for the pseudo-element's absolute positioning */
+  overflow: hidden; /* Hides the shine effect when it's outside the image */
+  display: block; /* Ensures the container has proper dimensions */
+  line-height: 0; /* Removes any extra space below the image */
+}
+
+/* 4. Create the shine pseudo-element (initially hidden) */
+.logo-link::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  /* The shine is a semi-transparent white gradient */
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 80%
+  );
+
+  /* Start the shine off-screen to the left */
+  transform: translateX(-100%);
+
+  /* Smooth transition for the movement */
+  transition: transform 0.6s ease-in-out;
+}
+
+/* 5. Trigger the animation on hover */
+.logo-link:hover::after {
+  /* Move the shine across the image to the right */
+  transform: translateX(100%);
+}
