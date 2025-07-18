@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  # The Backend API Service
+  backend:
+    build: ./backend
+    # No ports needed here; NGINX will handle traffic
+
+  # The Frontend React App Service
+  frontend:
+    build: ./frontend
+    # No ports needed here; NGINX will handle traffic
+
+  # The NGINX Reverse Proxy Service
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80" # Expose port 80 on the host machine to the outside world
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+      - frontend
