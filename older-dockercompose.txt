@@ -1,0 +1,27 @@
+services:
+  # The Backend API Service
+  backend:
+    build: ./backend
+    # No ports needed here; NGINX will handle traffic
+    ports:
+      - "5000:5000" #format for "host:container"
+
+  # The Frontend React App Service
+  frontend:
+    build: ./frontend
+    # The NGINX in the frontend container listens on port 80
+    # We map port 81 on host to port 80 in the container
+    ports:
+      - "81:80" # "Host:Container"
+
+  # The NGINX Reverse Proxy Service
+  
+#  nginx:
+#    image: nginx:stable-alpine
+#    ports:
+#      - "81:81" # Expose port 80 on the host machine to the outside world
+#    volumes:
+#      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+#    depends_on:
+#      - backend
+#      - frontend
