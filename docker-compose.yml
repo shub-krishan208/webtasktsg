@@ -1,23 +1,27 @@
-version: "3.8"
+# only nginx is going to be exposed publicly
 
 services:
-  # The Backend API Service
+  # The Backend API Service. No ports are exposed to the host.
   backend:
     build: ./backend
-    # No ports needed here; NGINX will handle traffic
+    # The 'restart: always' policy ensures the container restarts if it fails.
+    restart: always
 
-  # The Frontend React App Service
+  # The Frontend React App Service. No ports are exposed to the host.
   frontend:
     build: ./frontend
-    # No ports needed here; NGINX will handle traffic
+    restart: always
 
-  # The NGINX Reverse Proxy Service
+  # The Main NGINX Reverse Proxy Service
   nginx:
-    image: nginx:stable-alpine
+    # We build the proxy image from the nginx directory
+    build: ./nginx
+    # It's the only service that exposes ports to the host machine.
+    # Port 80 on the host is mapped to port 80 in the container.
     ports:
-      - "80:80" # Expose port 80 on the host machine to the outside world
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - "80:80"
+    restart: always
+    # It depends on the other services being available before it starts.
     depends_on:
       - backend
       - frontend
