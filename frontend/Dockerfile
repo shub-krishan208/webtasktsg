@@ -23,7 +23,7 @@ FROM nginx:stable-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expose port 80
-EXPOSE 80
+EXPOSE 81
 
 # The NGINX image will automatically start the server
 CMD ["nginx", "-g", "daemon off;"]

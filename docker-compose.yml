@@ -15,7 +15,7 @@ services:
   nginx:
     image: nginx:stable-alpine
     ports:
-      - "80:80" # Expose port 80 on the host machine to the outside world
+      - "81:81" # Expose port 81 on the host machine to the outside world
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
