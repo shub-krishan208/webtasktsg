@@ -1,47 +1,60 @@
+import React from "react";
 import { useState } from "react";
+
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import HomePage from "./pages/homepage";
+import WikiDashboard from "./pages/wikidashboard";
+
 import siteLogo from "./assets/icons8-tech-100.png";
 import kgpLogo from "./assets/iitkgplogo.png";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <header>
-        <h1 className="title-heading">
-          <a
-            href="https://www.iitkgp.ac.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="logo-link"
-          >
-            <img src={kgpLogo} alt="KGP Logo" className="logo-image" />
+    <Router>
+      {/* Navigation Bar */}
+
+      <nav className="navbar navbar-expand-lg sticky-top bg-body-tertiary">
+        <div className="container-fluid">
+          <a className="navbar-brand" href="#">
+            Navigation
           </a>
-          <span>TSG Secretary: Web</span>
-        </h1>
-      </header>
-      <div class="card text-center">
-        <div class="card-header">Web Deployment Task</div>
-        <div class="card-body">
-          <h5 class="card-title">Shubham Krishan</h5>
-          <p class="card-text">
-            This is a simple webapp deployed to be viewed on any device.
-          </p>
-          <a
-            href="https://www.iitkgp.ac.in/welcome-freshers"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-primary"
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
           >
-            IITKgp Freshers Page
-          </a>
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <Link className="nav-link active" aria-current="page" to="/">
+                  Home Page
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/wiki">
+                  WikiDashboard
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="card-footer text-body-secondary">
-          This page has been seen 69 times!
-        </div>
-      </div>
-    </>
+      </nav>
+
+      {/* Route Definitions */}
+      <main className="container mt-3">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/wiki" element={<WikiDashboard />} />
+        </Routes>
+      </main>
+    </Router>
   );
 }
 
