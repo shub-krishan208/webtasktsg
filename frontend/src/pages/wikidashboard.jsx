@@ -203,7 +203,12 @@ function WikiDashboard() {
 
         <main>
           <Card>
-            <Card.Header as="h4">{pageTitle}</Card.Header>
+            <Card.Header as="h4">
+              {pageTitle || "Title"}{" "}
+              <span className="text-muted">
+                {"#" + (pageData?.query?.pages[0]?.pageid || "pageid")}
+              </span>
+            </Card.Header>
             <Card.Body>
               <Row>
                 <Col md={3}>
@@ -212,11 +217,27 @@ function WikiDashboard() {
                     variant="top"
                     src={
                       pageData?.query?.pages[0]?.thumbnail?.source ||
-                      "../assets/IIT_Kharagpur_Logo.svg"
+                      "https://demofree.sirv.com/nope-not-here.jpg?w=150"
+                      // adding a fallback image in case there is noimage available in the api call database
                     }
                     className="mb-3"
                     alt={"thumbnail for: " + pageTitle}
                   />
+                  <Card>
+                    <Card.Body>
+                      <Row>
+                        <p>Creation Date</p>
+                        <p>Page Length</p>
+                        <p>Last Edited</p>
+                        <p>Current Revision ID</p>
+                        <p>Page Protection Status</p>
+                        <p>Total views in the last 30 days</p>
+                        <p>Number of Unique Editors</p>
+                        <p>Last Editor</p>
+                        <p>Number of Languages Available</p>
+                      </Row>
+                    </Card.Body>
+                  </Card>
                 </Col>
                 <Col md={9}>Stats and Lists</Col>
               </Row>
