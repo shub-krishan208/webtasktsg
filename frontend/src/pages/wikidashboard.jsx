@@ -60,6 +60,7 @@ function WikiDashboard() {
         fetchContributorsData(contributorsUrl);
         fetchLinksData(linksUrl);
         fetchBacklinksData(backlinksUrl);
+        fetchPageviewData(pageViewUrl);
       })
       .catch((error) => {
         console.error("Error fetching search results:", error);
@@ -79,6 +80,7 @@ function WikiDashboard() {
   const [contributorsData, setContributorsData] = useState(null);
   const [linksData, setLinksData] = useState(null);
   const [backlinksData, setBacklinksData] = useState(null);
+  const [pageViewData, setPageViewData] = useState(null);
 
   const fetchPageData = (pageUrl) => {
     console.log(`Fetching pagedata from: ${pageUrl}`);
@@ -171,6 +173,24 @@ function WikiDashboard() {
         console.error("Error backlinks data:", error);
       });
   };
+  const fetchPageviewData = (pageViewUrl) => {
+    console.log(`Fetching pageview data from: ${pageViewUrl}`);
+    fetch(pageViewUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(" pageview data:", data);
+        // Handle the search results here
+        setPageViewData(data);
+      })
+      .catch((error) => {
+        console.error("Error pageview data:", error);
+      });
+  };
   return (
     <>
       <div>
@@ -223,21 +243,48 @@ function WikiDashboard() {
                     className="mb-3"
                     alt={"thumbnail for: " + pageTitle}
                   />
-                  <Card>
-                    <Card.Body>
-                      <Row>
-                        <p>Creation Date</p>
-                        <p>Page Length</p>
-                        <p>Last Edited</p>
-                        <p>Current Revision ID</p>
-                        <p>Page Protection Status</p>
-                        <p>Total views in the last 30 days</p>
-                        <p>Number of Unique Editors</p>
-                        <p>Last Editor</p>
-                        <p>Number of Languages Available</p>
-                      </Row>
-                    </Card.Body>
-                  </Card>
+                  <ListGroup flush className="mt-3">
+                    <ListGroup.Item>
+                      {"created on: " +
+                        creationData?.query?.pages[0]?.revisions[0]
+                          ?.timestamp || "creation-date"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      {pageData?.query?.pages[0]?.length + " bytes" ||
+                        "page-length"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      {"last edited: " +
+                        pageData?.query?.pages[0]?.revisions[0]?.timestamp ||
+                        "last-edited"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      {"last edited by: " +
+                        pageData?.query?.pages[0]?.revisions[0]?.user ||
+                        "last-editor"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      {"current revision id: " +
+                        pageData?.query?.pages[0]?.lastrevid ||
+                        "current-revision-id"}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      {/* {pageData?.query?.pages[0]?.pageid || "#views-in-30-days"} */}
+                      #error in pageViewData
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      {"total contributors " +
+                        (contributorsData?.query?.pages[0]?.contributors
+                          ?.length +
+                          contributorsData?.query?.pages[0]?.anoncontributors ||
+                          "total-unique-editors")}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      {"languages supported: " +
+                        (pageData?.query?.pages[0]?.langlinks?.length ||
+                          "number-of-available-languages")}
+                    </ListGroup.Item>
+                  </ListGroup>
                 </Col>
                 <Col md={9}>Stats and Lists</Col>
               </Row>
