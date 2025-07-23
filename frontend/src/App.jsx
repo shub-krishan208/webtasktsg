@@ -11,7 +11,7 @@ import "./App.css";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/webtasktsg">
       {/* Navigation Bar */}
 
       <nav className="navbar navbar-expand-lg sticky-top bg-body-tertiary">
