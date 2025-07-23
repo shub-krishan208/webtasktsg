@@ -51,7 +51,7 @@ function WikiDashboard() {
         let contributorsUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${formattedTitle}&prop=contributors&pclimit=max&format=json&formatversion=2${CORS_HELPER}`;
         let linksUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${formattedTitle}&prop=links&pllimit=max&format=json&formatversion=2${CORS_HELPER}`;
         let backlinksUrl = `https://en.wikipedia.org/w/api.php?action=query&list=backlinks&bltitle=${formattedTitle}&bllimit=200&format=json&formatversion=2${CORS_HELPER}`;
-        let pageViewUrl = `https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/${formattedTitle}/daily/20250620/20250720${CORS_HELPER}`;
+        let pageViewUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${formattedTitle}&prop=pageviews&pvipdays=30&format=json&formatversion=2${CORS_HELPER}`;
         // Handle the search results here
         setSearchData(data);
         setPageTitle(title);
@@ -191,6 +191,14 @@ function WikiDashboard() {
         console.error("Error pageview data:", error);
       });
   };
+
+  const totalViews = pageViewData
+    ? Object.values(pageViewData?.query?.pages[0]?.pageviews).reduce(
+        (sum, current) => sum + (current || 0),
+        0
+      )
+    : "undefined"; //calculate total views by adding all entries in past 30 days
+  const timeStamp = creationData?.query?.pages[0]?.revisions[0]?.timestamp;
   return (
     <>
       <div>
@@ -231,7 +239,7 @@ function WikiDashboard() {
             </Card.Header>
             <Card.Body>
               <Row>
-                <Col md={3}>
+                <Col md={4}>
                   {/*Image and MetaData*/}
                   <Card.Img
                     variant="top"
@@ -245,9 +253,16 @@ function WikiDashboard() {
                   />
                   <ListGroup flush className="mt-3">
                     <ListGroup.Item>
-                      {"created on: " +
-                        creationData?.query?.pages[0]?.revisions[0]
-                          ?.timestamp || "creation-date"}
+                      Created on:{" "}
+                      {timeStamp ? (
+                        <strong>
+                          {new Date(timeStamp).toLocaleDateString()}
+                        </strong>
+                      ) : (
+                        <span className={!timeStamp ? "text-muted" : ""}>
+                          undefined
+                        </span>
+                      )}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       {pageData?.query?.pages[0]?.length + " bytes" ||
@@ -269,8 +284,7 @@ function WikiDashboard() {
                         "current-revision-id"}
                     </ListGroup.Item>
                     <ListGroup.Item>
-                      {/* {pageData?.query?.pages[0]?.pageid || "#views-in-30-days"} */}
-                      #error in pageViewData
+                      {"Total views in past 30 days: " + totalViews}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       {"total contributors " +
@@ -286,7 +300,7 @@ function WikiDashboard() {
                     </ListGroup.Item>
                   </ListGroup>
                 </Col>
-                <Col md={9}>Stats and Lists</Col>
+                <Col md={8}>Stats and Lists</Col>
               </Row>
             </Card.Body>
           </Card>
