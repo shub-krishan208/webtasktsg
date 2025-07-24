@@ -14,9 +14,9 @@ Also, for accessing the simple backend api (as per task requirements), add `/api
 
 This part of the project can be viewed directly at `/wiki` or use the frontend options to go to the page.
 
-Currently all the json data fetched by the api is logged on the console only, next update would make a more interactive and featureful dashboard to organize all the data in a more comfortable form.
+Currently all the json data fetched by the api is logged on the console and some metadata with thumbnail is shown, next update would make a more interactive and featureful dashboard to organize all the data in a more comfortable form.
 
-### To host the webapp in a server or locally, deploy it
+### To host the webapp in a server (HTTPS 443 shall be exposed), deploy it
 
 ```bash
 git clone https://github.com/shub-krishan208/webtasktsg.git
@@ -28,3 +28,17 @@ docker compose up -d --build
 
 - HTTP port (80) is exposed and NOT preqoccupied
 - you have installed docker on your machine.
+
+## HTTPS setup completed
+
+For deploying the website to @domain.tech
+first make sure your ddomain DNS settings are set properly for values _domain.com_ and _www.domain.com_.
+
+Also, for hosting a server with this project configureation, make sure port 80,81,5000 and 443 are not preoccupied on your server. (for changing ports, check `Dockerfile` for frontend, `nginx.conf` and `docker-compose.yml`)
+
+Also, for the SSL certificates, run the following in the project directory:
+
+```bash
+mkdir -p certbot/config # the domain files from /etc/letsencrypt shall be pasted inside this.
+mkdir -p certbot/www
+```
