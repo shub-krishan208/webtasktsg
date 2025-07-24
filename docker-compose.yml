@@ -7,10 +7,32 @@ services:
     # The 'restart: always' policy ensures the container restarts if it fails.
     restart: always
 
+    #for logging to work, must do the following:
+    # sudo nano /etc/logrotate.d/docker-compose-logs
+    # past the following into it, targeting the log files for all Docker containers.
+    # /var/lib/docker/containers/*/*.log {
+    #     daily
+    #     rotate 7
+    #     compress
+    #     missingok
+    #     notifempty
+    #     copytruncate
+    # }
+    #then rebuilt the docker containers
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m" # A decent size before docker rotates the log files by itself
+
   # The Frontend React App Service. No ports are exposed to the host.
   frontend:
     build: ./frontend
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
 
   # The Main NGINX Reverse Proxy Service
   nginx:
@@ -22,6 +44,10 @@ services:
       - "80:80"
       - "443:443"
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
 
     # Adding volumes section for Certbot and Nginx config
     volumes:
