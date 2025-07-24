@@ -199,6 +199,8 @@ function WikiDashboard() {
       )
     : "undefined"; //calculate total views by adding all entries in past 30 days
   const timeStamp = creationData?.query?.pages[0]?.revisions[0]?.timestamp;
+  const [summary, setSummary] = useState("");
+  const MAX_EXTRACT_LENGTH = 500;
   return (
     <>
       <div>
@@ -300,7 +302,12 @@ function WikiDashboard() {
                     </ListGroup.Item>
                   </ListGroup>
                 </Col>
-                <Col md={8}>Stats and Lists</Col>
+                <Col md={8}>
+                  <Card className="">
+                    {pageData?.query?.pages[0]?.extract ||
+                      "No summary/extract is provided for the page. :("}
+                  </Card>
+                </Col>
               </Row>
             </Card.Body>
           </Card>
