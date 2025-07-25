@@ -35,12 +35,6 @@ ChartJS.register(
   Legend
 );
 
-// //setting defaults for line chart
-// defaults.plugins.title.display = true;
-// defaults.plugins.title.align = start;
-// defaults.plugins.title.font.size = 28;
-// defaults.plugins.title.color = "white";
-
 // custom hook to get window width
 function useWindowWidth() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -599,6 +593,16 @@ function WikiDashboard() {
                     <span className="text-muted">
                       Wiki api has limited it to 60 days.
                     </span>
+                    <p>
+                      Average Daily views:{" "}
+                      <strong>
+                        {totalViews ? (
+                          totalViews / 30
+                        ) : (
+                          <span className="text-muted">undefined</span>
+                        )}
+                      </strong>
+                    </p>
                   </Card>
                 </Col>
               </Row>
