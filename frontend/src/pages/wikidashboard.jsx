@@ -348,7 +348,7 @@ function WikiDashboard() {
     };
 
     // for custom chart height for responsiveness
-    const customChartHeight = useWindowWidth() < 768 ? "30vh" : "50vh";
+    const customChartHeight = useWindowWidth() < 768 ? "40vh" : "50vh";
 
     // 5. Render the component
     return (
@@ -363,6 +363,40 @@ function WikiDashboard() {
       </>
     );
   };
+
+  // state for calculating views
+  const [viewsQuery, setViewsQuery] = useState("");
+  // const [viewsResult, setViewsResult] = useState("");
+  const viewsCalc = () => {
+    // Input validation remains the same
+    if (!viewsQuery || isNaN(viewsQuery) || viewsQuery <= 0) {
+      return <span className="text-muted">undefined</span>;
+    }
+    if (viewsQuery > 30) {
+      return <span className="text-muted">max 30 days!</span>;
+    }
+
+    // Directly calculate and return the sum
+    if (pageViewData?.query?.pages[0]?.pageviews) {
+      // 1. Get an array of just the view numbers
+      const viewValues = Object.values(pageViewData.query.pages[0].pageviews);
+
+      // 2. Slice the array of numbers
+      const slicedValues = viewValues.slice(0, viewsQuery);
+
+      // 3. Sum the sliced numbers
+      const sum = slicedValues.reduce(
+        (total, currentView) => total + currentView,
+        0
+      );
+
+      return <strong>{sum.toLocaleString()}</strong>; // Return the calculated sum directly
+    }
+
+    // Fallback if data is not available
+    return <span className="text-muted">calculating...</span>;
+  };
+
   return (
     <>
       <div className="text-center">
@@ -585,24 +619,43 @@ function WikiDashboard() {
                 <Col md={12}>
                   <Card
                     className="mt-3 pb-3"
-                    style={{ height: useWindowWidth() < 768 ? "40vh" : "60vh" }}
+                    style={{ height: useWindowWidth() < 768 ? "70vh" : "60vh" }}
                   >
                     <PageViewsChart
                       pageViewsData={pageViewData?.query?.pages[0]?.pageviews}
                     />
-                    <span className="text-muted">
-                      Wiki api has limited it to 60 days.
-                    </span>
-                    <p>
-                      Average Daily views:{" "}
-                      <strong>
+                    <Row>
+                      <Col>
+                        {" "}
+                        <Form>
+                          <Form.Control
+                            type="text"
+                            value={viewsQuery}
+                            onChange={(e) => setViewsQuery(e.target.value)}
+                            placeholder="Total views in last 'N' days"
+                          />
+                        </Form>
+                      </Col>
+                      <Col md={2} className="mt-2">
+                        <strong>{viewsCalc()}</strong>
+                      </Col>
+                      <Col className="mt-2 text-center">
+                        Average Daily views:{" "}
                         {totalViews ? (
-                          totalViews / 30
+                          <strong>{totalViews / 30}</strong>
                         ) : (
                           <span className="text-muted">undefined</span>
                         )}
-                      </strong>
-                    </p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col className="mt-2 text-end">
+                        <span className="text-muted">
+                          <br />
+                          Wiki api has limited it to 60 days.
+                        </span>
+                      </Col>
+                    </Row>
                   </Card>
                 </Col>
               </Row>
