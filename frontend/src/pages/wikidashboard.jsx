@@ -250,7 +250,7 @@ function WikiDashboard() {
     <>
       <div className="text-center">
         <h1>Wikipedia Dashboard</h1>
-        <p>This page is under construction.</p>
+        <p>This page is under construction. (adding more features)</p>
       </div>
       <Container fluid="lg" className="py-4">
         <header className="mb-4">
@@ -299,14 +299,14 @@ function WikiDashboard() {
                     alt={"thumbnail for: " + pageTitle}
                   />
                 </Col>
-                <Col md={8}>
-                  <Card className="w-100 h-100 mt-3 text-newspaper">
+                <Col md={8} className="mb-3">
+                  <Card className="w-100 h-100 text-newspaper">
                     {fetchExtract()}
                   </Card>
                 </Col>
               </Row>
               <Row>
-                <Col md={4} className="mt-3">
+                <Col md={4} className="">
                   <ListGroup flush className="mt-3">
                     <ListGroup.Item>
                       <Button
@@ -384,7 +384,7 @@ function WikiDashboard() {
                   </ListGroup>
                 </Col>
                 <Col md={4} className="mt-3">
-                  <Card className="h-100 mt-3">
+                  <Card className="h-100">
                     <Card.Header as="h6">
                       Scrollable list of all links
                     </Card.Header>
@@ -406,7 +406,7 @@ function WikiDashboard() {
                   </Card>
                 </Col>
                 <Col md={4} className="mt-3">
-                  <Card className="h-100 mt-3 ">
+                  <Card className="h-100 ">
                     <Card.Header as="h6">
                       Scrollable list of all backlinks
                     </Card.Header>
@@ -425,6 +425,13 @@ function WikiDashboard() {
                         </ListGroup.Item>
                       ))}
                     </ListGroup>
+                  </Card>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <Card className="mt-3 pb-3">
+                    This row will contain daily page view data.
                   </Card>
                 </Col>
               </Row>
