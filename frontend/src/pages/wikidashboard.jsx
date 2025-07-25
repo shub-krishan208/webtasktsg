@@ -20,6 +20,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from "chart.js";
 
 // Register the necessary components with Chart.js
@@ -29,6 +30,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Title,
+  Filler, // to fill the area under the curve, looks cool 0o0 ;
   Tooltip,
   Legend
 );
@@ -297,7 +299,7 @@ function WikiDashboard() {
           fill: true, // Fill the area under the line
           backgroundColor: "rgba(75,192,192,0.2)", // Light teal fill
           borderColor: "rgba(75,192,192,1)", // Solid teal line
-          tension: 0.1, // Makes the line slightly curved
+          tension: 0.4, // Makes the line slightly curved
         },
       ],
     };
@@ -332,13 +334,19 @@ function WikiDashboard() {
         x: {
           title: {
             display: true,
-            text: "Date",
+            text: "Dates",
+          },
+          grid: {
+            color: "rgba(193, 255, 236, 0.17)",
           },
         },
         y: {
           title: {
             display: true,
             text: "Number of Views",
+          },
+          grid: {
+            color: "rgba(193, 255, 236, 0.17)",
           },
           beginAtZero: true, // Start the Y-axis at 0
         },
@@ -489,6 +497,18 @@ function WikiDashboard() {
                       )}
                     </ListGroup.Item>
                     <ListGroup.Item>
+                      Total links:{" "}
+                      {listLinks.length || (
+                        <span className="text-muted">undefined</span>
+                      )}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      Backlinks:{" "}
+                      {listBackLinks.length || (
+                        <span className="text-muted">undefined</span>
+                      )}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
                       {"languages supported: " +
                         (pageData?.query?.pages[0]?.langlinks?.length ||
                           "number-of-available-languages")}
@@ -497,9 +517,7 @@ function WikiDashboard() {
                 </Col>
                 <Col md={4} className="mt-3">
                   <Card className="h-100">
-                    <Card.Header as="h6">
-                      Scrollable list of all links
-                    </Card.Header>
+                    <Card.Header as="h6">List of all links</Card.Header>
                     <ListGroup
                       style={{ maxHeight: "300px", overflowY: "auto" }}
                     >
@@ -519,9 +537,7 @@ function WikiDashboard() {
                 </Col>
                 <Col md={4} className="mt-3">
                   <Card className="h-100 ">
-                    <Card.Header as="h6">
-                      Scrollable list of all backlinks
-                    </Card.Header>
+                    <Card.Header as="h6">List of all backlinks</Card.Header>
                     <ListGroup
                       style={{ maxHeight: "300px", overflowY: "auto" }}
                     >
