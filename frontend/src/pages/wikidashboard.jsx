@@ -9,6 +9,35 @@ import {
   Card,
   ListGroup,
 } from "react-bootstrap";
+// import { Chart as ChartJS } from "chart.js/auto";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register the necessary components with Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+// //setting defaults for line chart
+// defaults.plugins.title.display = true;
+// defaults.plugins.title.align = start;
+// defaults.plugins.title.font.size = 28;
+// defaults.plugins.title.color = "white";
 
 // custom hook to get window width
 function useWindowWidth() {
@@ -246,6 +275,89 @@ function WikiDashboard() {
   // the list of links is an array of 500 objects having a title which can be used to make pagelinks using makeLink function
   const listLinks = linksData?.query?.pages[0]?.links || [];
   const listBackLinks = backlinksData?.query?.backlinks || [];
+
+  // arrow function to make a line chart using pageview data
+  const PageViewsChart = ({ pageViewsData }) => {
+    // 1. Check if data exists, otherwise show a message or a loading state.
+    if (!pageViewsData || Object.keys(pageViewsData).length === 0) {
+      return <p className="text-muted">No page view data available.</p>;
+    }
+
+    // 2. Process the data into the format Chart.js needs
+    const labels = Object.keys(pageViewsData); // Dates for the X-axis
+    const dataPoints = Object.values(pageViewsData); // View counts for the Y-axis
+
+    // 3. Define the data structure for the chart
+    const data = {
+      labels: labels,
+      datasets: [
+        {
+          label: "Daily Page Views",
+          data: dataPoints,
+          fill: true, // Fill the area under the line
+          backgroundColor: "rgba(75,192,192,0.2)", // Light teal fill
+          borderColor: "rgba(75,192,192,1)", // Solid teal line
+          tension: 0.1, // Makes the line slightly curved
+        },
+      ],
+    };
+
+    // 4. Configure the chart's appearance and behavior
+    const options = {
+      responsive: true, // Makes the chart responsive to container size
+      maintainAspectRatio: false, // Allows us to control height
+      plugins: {
+        legend: {
+          position: "top", // Position the legend at the top
+        },
+        title: {
+          display: true,
+          align: "start",
+          text: "Page Views Over the Last Month",
+          font: {
+            size: 28,
+          },
+          color: "white",
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              // Custom tooltip to show "Views: 1234"
+              return `Views: ${context.parsed.y}`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Date",
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Number of Views",
+          },
+          beginAtZero: true, // Start the Y-axis at 0
+        },
+      },
+    };
+
+    // 5. Render the component
+    return (
+      <>
+        {/* Set a container with a defined aspect ratio or height for the chart */}
+        <div
+          className="shadow-sm"
+          style={{ position: "relative", height: "50vh" }}
+        >
+          <Line options={options} data={data} />
+        </div>
+      </>
+    );
+  };
   return (
     <>
       <div className="text-center">
@@ -430,8 +542,13 @@ function WikiDashboard() {
               </Row>
               <Row>
                 <Col md={12}>
-                  <Card className="mt-3 pb-3">
-                    This row will contain daily page view data.
+                  <Card className="mt-3 pb-3" style={{ height: "60vh" }}>
+                    <PageViewsChart
+                      pageViewsData={pageViewData?.query?.pages[0]?.pageviews}
+                    />
+                    <span className="text-muted">
+                      Wiki api has limited it to 60 days.
+                    </span>
                   </Card>
                 </Col>
               </Row>
