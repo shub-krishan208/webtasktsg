@@ -246,7 +246,7 @@ function WikiDashboard() {
         (sum, current) => sum + (current || 0),
         0
       )
-    : "undefined"; //calculate total views by adding all entries in past 30 days
+    : undefined; //calculate total views by adding all entries in past 30 days
   const timeStamp = creationData?.query?.pages[0]?.revisions[0]?.timestamp;
   const fetchExtract = () => {
     const width = useWindowWidth();
@@ -353,13 +353,16 @@ function WikiDashboard() {
       },
     };
 
+    // for custom chart height for responsiveness
+    const customChartHeight = useWindowWidth() < 768 ? "30vh" : "50vh";
+
     // 5. Render the component
     return (
       <>
         {/* Set a container with a defined aspect ratio or height for the chart */}
         <div
           className="shadow-sm"
-          style={{ position: "relative", height: "50vh" }}
+          style={{ position: "relative", height: customChartHeight }}
         >
           <Line options={options} data={data} />
         </div>
@@ -454,8 +457,14 @@ function WikiDashboard() {
                       )}
                     </ListGroup.Item>
                     <ListGroup.Item>
-                      {pageData?.query?.pages[0]?.length + " bytes" ||
-                        "page-length"}
+                      Page size:{" "}
+                      {pageData ? (
+                        <strong>
+                          {pageData?.query?.pages[0]?.length + " bytes"}
+                        </strong>
+                      ) : (
+                        <span className="text-muted">undefined</span>
+                      )}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       Last Edited on:{" "}
@@ -472,17 +481,30 @@ function WikiDashboard() {
                       )}
                     </ListGroup.Item>
                     <ListGroup.Item>
-                      {"last edited by: " +
-                        pageData?.query?.pages[0]?.revisions[0]?.user ||
-                        "last-editor"}
+                      Last edited by:{" "}
+                      {pageData ? (
+                        <strong>
+                          {pageData?.query?.pages[0]?.revisions[0]?.user}
+                        </strong>
+                      ) : (
+                        <span className="text-muted">undefined</span>
+                      )}
                     </ListGroup.Item>
                     <ListGroup.Item>
-                      {"current revision id: " +
-                        pageData?.query?.pages[0]?.lastrevid ||
-                        "current-revision-id"}
+                      Current Revision ID:{" "}
+                      {pageData ? (
+                        <strong>{pageData?.query?.pages[0]?.lastrevid}</strong>
+                      ) : (
+                        <span className="text-muted">undefined</span>
+                      )}
                     </ListGroup.Item>
                     <ListGroup.Item>
-                      {"Total views in past 30 days: " + totalViews}
+                      Views in last 30 days:{" "}
+                      {totalViews ? (
+                        <strong>{totalViews}</strong>
+                      ) : (
+                        <span className="text-muted">undefined</span>
+                      )}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       Total Contributors:{" "}
@@ -498,20 +520,29 @@ function WikiDashboard() {
                     </ListGroup.Item>
                     <ListGroup.Item>
                       Total links:{" "}
-                      {listLinks.length || (
+                      {linksData ? (
+                        <strong>{listLinks.length}</strong>
+                      ) : (
                         <span className="text-muted">undefined</span>
                       )}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       Backlinks:{" "}
-                      {listBackLinks.length || (
+                      {backlinksData ? (
+                        <strong>{listBackLinks.length}</strong>
+                      ) : (
                         <span className="text-muted">undefined</span>
                       )}
                     </ListGroup.Item>
                     <ListGroup.Item>
-                      {"languages supported: " +
-                        (pageData?.query?.pages[0]?.langlinks?.length ||
-                          "number-of-available-languages")}
+                      Languages supported:{" "}
+                      {pageData ? (
+                        <strong>
+                          {pageData?.query?.pages[0]?.langlinks?.length}
+                        </strong>
+                      ) : (
+                        <span className="text-muted">undefined</span>
+                      )}
                     </ListGroup.Item>
                   </ListGroup>
                 </Col>
@@ -519,7 +550,7 @@ function WikiDashboard() {
                   <Card className="h-100">
                     <Card.Header as="h6">List of all links</Card.Header>
                     <ListGroup
-                      style={{ maxHeight: "300px", overflowY: "auto" }}
+                      style={{ maxHeight: "360px", overflowY: "auto" }}
                     >
                       {listLinks.map((link, index) => (
                         <ListGroup.Item key={index}>
@@ -539,7 +570,7 @@ function WikiDashboard() {
                   <Card className="h-100 ">
                     <Card.Header as="h6">List of all backlinks</Card.Header>
                     <ListGroup
-                      style={{ maxHeight: "300px", overflowY: "auto" }}
+                      style={{ maxHeight: "360px", overflowY: "auto" }}
                     >
                       {listBackLinks.map((link, index) => (
                         <ListGroup.Item key={index}>
@@ -558,7 +589,10 @@ function WikiDashboard() {
               </Row>
               <Row>
                 <Col md={12}>
-                  <Card className="mt-3 pb-3" style={{ height: "60vh" }}>
+                  <Card
+                    className="mt-3 pb-3"
+                    style={{ height: useWindowWidth() < 768 ? "40vh" : "60vh" }}
+                  >
                     <PageViewsChart
                       pageViewsData={pageViewData?.query?.pages[0]?.pageviews}
                     />
