@@ -10,6 +10,24 @@ import {
   ListGroup,
 } from "react-bootstrap";
 
+// custom hook to get window width
+function useWindowWidth() {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    // Add event listener for window resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup: Remove event listener when the component unmounts
+    // This is crucial to prevent memory leaks
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return windowWidth;
+}
+
 function WikiDashboard() {
   const [query, setQuery] = useState(""); //stores the user input in query variable
   const [searchData, setSearchData] = useState(null); //stores fetched json data
@@ -199,11 +217,38 @@ function WikiDashboard() {
       )
     : "undefined"; //calculate total views by adding all entries in past 30 days
   const timeStamp = creationData?.query?.pages[0]?.revisions[0]?.timestamp;
-  const [summary, setSummary] = useState("");
-  const MAX_EXTRACT_LENGTH = 500;
+  const fetchExtract = () => {
+    const width = useWindowWidth();
+    const getMaxLength = () => {
+      if (width < 768) {
+        return 300;
+      } else if (width < 992) {
+        return 700;
+      } else {
+        return 1200;
+      }
+    };
+    const MAX_EXTRACT_LENGTH = getMaxLength();
+    let extract =
+      pageData?.query?.pages[0]?.extract ||
+      "No summary provided on the page. Please visit the page for more details.";
+    if (extract.length > MAX_EXTRACT_LENGTH) {
+      return (
+        extract.substring(0, MAX_EXTRACT_LENGTH) +
+        "..." +
+        " \n Check page for more details."
+      );
+    }
+    return extract;
+  };
+  const lastEditedTimestamp =
+    pageData?.query?.pages[0]?.revisions[0]?.timestamp;
+  // the list of links is an array of 500 objects having a title which can be used to make pagelinks using makeLink function
+  const listLinks = linksData?.query?.pages[0]?.links || [];
+  const listBackLinks = backlinksData?.query?.backlinks || [];
   return (
     <>
-      <div>
+      <div className="text-center">
         <h1>Wikipedia Dashboard</h1>
         <p>This page is under construction.</p>
       </div>
@@ -233,7 +278,7 @@ function WikiDashboard() {
 
         <main>
           <Card>
-            <Card.Header as="h4">
+            <Card.Header as="h4" className="text-center">
               {pageTitle || "Title"}{" "}
               <span className="text-muted">
                 {"#" + (pageData?.query?.pages[0]?.pageid || "pageid")}
@@ -253,7 +298,29 @@ function WikiDashboard() {
                     className="mb-3"
                     alt={"thumbnail for: " + pageTitle}
                   />
+                </Col>
+                <Col md={8}>
+                  <Card className="w-100 h-100 mt-3 text-newspaper">
+                    {fetchExtract()}
+                  </Card>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={4} className="mt-3">
                   <ListGroup flush className="mt-3">
+                    <ListGroup.Item>
+                      <Button
+                        variant="primary"
+                        className="w-100"
+                        href={`https://en.wikipedia.org/wiki/${
+                          pageData ? pageData?.query?.pages[0]?.title : ""
+                        }`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Open original page
+                      </Button>
+                    </ListGroup.Item>
                     <ListGroup.Item>
                       Created on:{" "}
                       {timeStamp ? (
@@ -271,9 +338,18 @@ function WikiDashboard() {
                         "page-length"}
                     </ListGroup.Item>
                     <ListGroup.Item>
-                      {"last edited: " +
-                        pageData?.query?.pages[0]?.revisions[0]?.timestamp ||
-                        "last-edited"}
+                      Last Edited on:{" "}
+                      {timeStamp ? (
+                        <strong>
+                          {new Date(lastEditedTimestamp).toLocaleDateString()}
+                        </strong>
+                      ) : (
+                        <span
+                          className={!lastEditedTimestamp ? "text-muted" : ""}
+                        >
+                          undefined
+                        </span>
+                      )}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       {"last edited by: " +
@@ -289,11 +365,16 @@ function WikiDashboard() {
                       {"Total views in past 30 days: " + totalViews}
                     </ListGroup.Item>
                     <ListGroup.Item>
-                      {"total contributors " +
-                        (contributorsData?.query?.pages[0]?.contributors
-                          ?.length +
-                          contributorsData?.query?.pages[0]?.anoncontributors ||
-                          "total-unique-editors")}
+                      Total Contributors:{" "}
+                      {pageData ? (
+                        <strong>
+                          {contributorsData?.query?.pages[0]?.contributors
+                            ?.length +
+                            contributorsData?.query?.pages[0]?.anoncontributors}
+                        </strong>
+                      ) : (
+                        <span className="text-muted">undefined</span>
+                      )}
                     </ListGroup.Item>
                     <ListGroup.Item>
                       {"languages supported: " +
@@ -302,10 +383,48 @@ function WikiDashboard() {
                     </ListGroup.Item>
                   </ListGroup>
                 </Col>
-                <Col md={8}>
-                  <Card className="">
-                    {pageData?.query?.pages[0]?.extract ||
-                      "No summary/extract is provided for the page. :("}
+                <Col md={4} className="mt-3">
+                  <Card className="h-100 mt-3">
+                    <Card.Header as="h6">
+                      Scrollable list of all links
+                    </Card.Header>
+                    <ListGroup
+                      style={{ maxHeight: "300px", overflowY: "auto" }}
+                    >
+                      {listLinks.map((link, index) => (
+                        <ListGroup.Item key={index}>
+                          <a
+                            href={`https://en.wikipedia.org/wiki/${link.title}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {link.title}
+                          </a>
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
+                  </Card>
+                </Col>
+                <Col md={4} className="mt-3">
+                  <Card className="h-100 mt-3 ">
+                    <Card.Header as="h6">
+                      Scrollable list of all backlinks
+                    </Card.Header>
+                    <ListGroup
+                      style={{ maxHeight: "300px", overflowY: "auto" }}
+                    >
+                      {listBackLinks.map((link, index) => (
+                        <ListGroup.Item key={index}>
+                          <a
+                            href={`https://en.wikipedia.org/wiki/${link.title}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {link.title}
+                          </a>
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
                   </Card>
                 </Col>
               </Row>
