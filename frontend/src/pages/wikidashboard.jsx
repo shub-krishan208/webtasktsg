@@ -622,7 +622,15 @@ function WikiDashboard() {
                     style={{ height: useWindowWidth() < 768 ? "70vh" : "60vh" }}
                   >
                     <PageViewsChart
-                      pageViewsData={pageViewData?.query?.pages[0]?.pageviews}
+                      pageViewsData={
+                        useWindowWidth() < 768
+                          ? Object.fromEntries(
+                              Object.entries(
+                                pageViewData?.query?.pages[0].pageviews || ""
+                              ).slice(0, 7)
+                            )
+                          : pageViewData?.query?.pages[0]?.pageviews
+                      }
                     />
                     <Row>
                       <Col>
